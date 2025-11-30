@@ -85,6 +85,10 @@ micronaut:
       uptime-check:
         num-threads: 4
         prefer-native-transport: false
+  http:
+    client:
+      ssl:
+        insecure-trust-all-certificates: true
   caches:
     default-status-page:
       expire-after-write: ${DEFAULT_STATUS_PAGE_CACHE_EXPIRES_AFTER:`PT5M`}
