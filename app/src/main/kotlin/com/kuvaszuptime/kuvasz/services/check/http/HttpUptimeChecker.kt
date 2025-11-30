@@ -103,7 +103,17 @@ class HttpUptimeChecker(
 }
 
 @Singleton
-class HttpCheckerClientConfiguration(config: ApplicationConfiguration) : HttpClientConfiguration(config) {
+class HttpCheckerClientConfiguration(
+    config: ApplicationConfiguration,
+    private val sslContext: javax.net.ssl.SSLContext
+) : HttpClientConfiguration(config) {
+
+    init {
+        // Set the default SSL context for the JVM to use our trust-all context
+        // This ensures that all HTTP clients use our SSL configuration
+        javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
+        javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
+    }
 
     override fun getEventLoopGroup(): String = EVENT_LOOP_GROUP
 
