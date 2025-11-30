@@ -41,11 +41,18 @@ class SSLValidator {
         val start = System.currentTimeMillis()
 
         val result = try {
-            // Use a socket factory that accepts all certificates (including expired ones)
-            // so we can read the certificate information and report the actual status
-            val trustAllSocketFactory = createTrustAllSocketFactory()
-            val socket = trustAllSocketFactory.createSocket(url.host, url.port.takeIf { it != -1 } ?: DEFAULT_SSL_PORT) as SSLSocket
+            // Create SSLContext that accepts all certificates (including expired ones)
+            val sslContext = createTrustAllSslContext()
+            val socketFactory = sslContext.socketFactory
+            
+            // Create socket using the trust-all factory
+            val socket = socketFactory.createSocket(url.host, url.port.takeIf { it != -1 } ?: DEFAULT_SSL_PORT) as SSLSocket
             socket.soTimeout = SOCKET_TIMEOUT_MS
+            
+            // Disable hostname verification to allow expired/invalid certificates
+            val sslParams = socket.sslParameters
+            sslParams.endpointIdentificationAlgorithm = ""
+            socket.sslParameters = sslParams
             
             socket.use { sslSocket ->
                 sslSocket.startHandshake()
@@ -76,21 +83,26 @@ class SSLValidator {
     }
 
     /**
-     * Creates a socket factory that accepts all certificates (including expired ones)
+     * Creates an SSLContext that accepts all certificates (including expired ones)
      * This allows us to read certificate information even when certificates are expired or invalid,
      * so we can properly report the certificate status instead of failing with a connection error.
      */
-    private fun createTrustAllSocketFactory(): SSLSocketFactory {
+    private fun createTrustAllSslContext(): SSLContext {
         val trustAllCerts = arrayOf<TrustManager>(
             object : X509TrustManager {
-                override fun checkClientTrusted(chain: Array<X509Certificate>?, authType: String?) {}
-                override fun checkServerTrusted(chain: Array<X509Certificate>?, authType: String?) {}
+                override fun checkClientTrusted(chain: Array<X509Certificate>?, authType: String?) {
+                    // Accept all certificates
+                }
+                override fun checkServerTrusted(chain: Array<X509Certificate>?, authType: String?) {
+                    // Accept all certificates, including expired ones
+                    // This method is called during the SSL handshake, and by not throwing an exception,
+                    // we accept the certificate regardless of its validity status
+                }
                 override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
             }
         )
-        val sslContext = SSLContext.getInstance("TLS").apply {
+        return SSLContext.getInstance("TLS").apply {
             init(null, trustAllCerts, java.security.SecureRandom())
         }
-        return sslContext.socketFactory
     }
 }
