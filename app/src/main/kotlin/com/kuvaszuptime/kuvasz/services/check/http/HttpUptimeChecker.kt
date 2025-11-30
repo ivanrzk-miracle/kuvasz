@@ -111,6 +111,7 @@ class HttpCheckerClientConfiguration(
     init {
         // Set the default SSL context for the JVM to use our trust-all context
         // This ensures that all HTTP clients use our SSL configuration
+        javax.net.ssl.SSLContext.setDefault(sslContext)
         javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
         javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
     }
