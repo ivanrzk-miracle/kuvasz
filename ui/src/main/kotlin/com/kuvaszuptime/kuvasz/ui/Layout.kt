@@ -109,8 +109,9 @@ internal fun FlowOrMetaDataOrPhrasingContent.commonScripts(appVersion: String) {
 }
 
 internal fun FlowOrMetaDataOrPhrasingContent.defaultFaviconsAndManifest() {
-    link(rel = "apple-touch-icon", href = "/public/apple-touch-icon.png") { sizes = "180x180" }
-    link(rel = "icon", href = "/public/favicon-32x32.png", type = "image/png") { sizes = "32x32" }
-    link(rel = "icon", href = "/public/favicon-16x16.png", type = "image/png") { sizes = "16x16" }
+    link(rel = "apple-touch-icon", href = "/public/miracle-devs-logo.png") { sizes = "180x180" }
+    link(rel = "icon", href = "/public/miracle-devs-logo.png", type = "image/png") { sizes = "32x32" }
+    link(rel = "icon", href = "/public/miracle-devs-logo.png", type = "image/png") { sizes = "16x16" }
+    link(rel = "icon", href = "/public/miracle-devs-logo.png", type = "image/png")
     link(rel = "manifest", href = "/public/site.webmanifest")
 }
