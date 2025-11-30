@@ -36,7 +36,7 @@ internal fun FlowContent.statusPageFooter(statusPageGeneratedAt: OffsetDateTime)
                                 ) {
                                     classes(LINK_SECONDARY)
                                     targetBlank()
-                                    +"Kuvasz Uptime"
+                                    +"Miracle Devs URL Monitor"
                                 }
                             }
                         }

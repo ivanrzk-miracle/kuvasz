@@ -7,7 +7,7 @@ import com.kuvaszuptime.kuvasz.ui.utils.*
 import kotlinx.html.*
 import kotlinx.html.stream.*
 
-private const val DEFAULT_TITLE = "Kuvasz Uptime"
+private const val DEFAULT_TITLE = "Miracle Devs URL Monitor"
 internal const val DOCTYPE_NOTATION = "<!DOCTYPE html>"
 
 internal fun withLayout(

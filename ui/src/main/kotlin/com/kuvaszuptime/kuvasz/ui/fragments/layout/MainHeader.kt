@@ -8,8 +8,8 @@ import com.kuvaszuptime.kuvasz.ui.icons.*
 import com.kuvaszuptime.kuvasz.ui.utils.*
 import kotlinx.html.*
 
-internal const val DEFAULT_SITE_LOGO_URL = "/public/kuvasz-avatar.png"
-internal const val DEFAULT_SITE_LOGO_ALT = "Kuvasz Uptime"
+internal const val DEFAULT_SITE_LOGO_URL = "/public/miracle-devs-logo.png"
+internal const val DEFAULT_SITE_LOGO_ALT = "Miracle Devs URL Monitor"
 
 internal fun FlowContent.mainHeader(
     isAuthenticated: Boolean,
@@ -44,7 +44,7 @@ internal fun FlowContent.mainHeader(
                         width = "32"
                         height = "32"
                     }
-                    +"Kuvasz"
+                    +"Miracle Devs URL Monitor"
                 }
             }
 
