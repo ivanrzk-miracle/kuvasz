@@ -107,7 +107,8 @@ class HttpUptimeChecker(
 @Singleton
 class HttpCheckerClientConfiguration(
     config: ApplicationConfiguration,
-    private val sslContext: javax.net.ssl.SSLContext
+    private val sslContext: javax.net.ssl.SSLContext,
+    private val nettySslContext: SslContext
 ) : HttpClientConfiguration(config) {
 
     init {
@@ -116,6 +117,9 @@ class HttpCheckerClientConfiguration(
         javax.net.ssl.SSLContext.setDefault(sslContext)
         javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
         javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
+        
+        // Log that we're using trust-all SSL
+        logger.info("HttpCheckerClientConfiguration initialized with trust-all SSL context")
     }
 
     override fun getEventLoopGroup(): String = EVENT_LOOP_GROUP
@@ -127,6 +131,14 @@ class HttpCheckerClientConfiguration(
     override fun getConnectionPoolConfiguration(): ConnectionPoolConfiguration = ConnectionPoolConfiguration()
 
     override fun isExceptionOnErrorStatus(): Boolean = false
+    
+    /**
+     * Returns true to disable SSL certificate validation
+     * This allows uptime checks to work even with expired or self-signed certificates
+     */
+    override fun isInsecureTrustAllCertificates(): Boolean {
+        return true
+    }
 
     companion object {
         private const val EVENT_LOOP_GROUP = "uptime-check"
