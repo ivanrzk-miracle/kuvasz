@@ -29,7 +29,7 @@ class AppConfig {
 
     var logEventHandler: Boolean = false
 
-    var checkUpdates: Boolean = true
+    var checkUpdates: Boolean = false
 
     private var isHttpMonitorExternalWriteDisabled = false
     private var isPushMonitorExternalWriteDisabled = false
