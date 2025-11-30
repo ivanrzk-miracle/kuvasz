@@ -2,6 +2,9 @@
 FROM gradle:8-jdk21 AS build
 WORKDIR /app
 
+# Copy .git directory first (needed for git-version plugin)
+COPY .git/ ./.git/
+
 # Copy Gradle files
 COPY gradle/ ./gradle/
 COPY gradlew ./
