@@ -17,6 +17,42 @@ class SSLContextConfig {
 
     private val logger = LoggerFactory.getLogger(SSLContextConfig::class.java)
 
+    init {
+        // Configure SSL to trust all certificates as early as possible
+        // This must happen before any HTTP clients are created
+        configureTrustAllSSL()
+    }
+
+    /**
+     * Configures the JVM and Netty to trust all certificates
+     * This is called during bean initialization to ensure it happens early
+     */
+    private fun configureTrustAllSSL() {
+        logger.info("Configuring SSL to accept all certificates for uptime checks")
+        
+        val trustAllCerts = arrayOf<TrustManager>(
+            object : X509TrustManager {
+                override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>?, authType: String?) {}
+                override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>?, authType: String?) {}
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+            }
+        )
+        
+        val sslContext = SSLContext.getInstance("TLS").apply {
+            init(null, trustAllCerts, java.security.SecureRandom())
+        }
+        
+        // Set as default for the entire JVM
+        javax.net.ssl.SSLContext.setDefault(sslContext)
+        javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
+        javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
+        
+        // Also set system properties that Netty might use
+        System.setProperty("io.netty.handler.ssl.util.InsecureTrustManagerFactory", "true")
+        
+        logger.info("SSL configured to trust all certificates")
+    }
+
     /**
      * Creates a TrustManager that accepts all certificates (including expired/invalid ones).
      * This allows uptime checks to work even with self-signed or expired certificates,
@@ -26,7 +62,7 @@ class SSLContextConfig {
     @Primary
     @Singleton
     fun trustAllSslContext(): SSLContext {
-        logger.info("Configuring SSL context to accept all certificates for uptime checks")
+        logger.info("Creating SSL context bean to accept all certificates for uptime checks")
         val trustAllCerts = arrayOf<TrustManager>(
             object : X509TrustManager {
                 override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>?, authType: String?) {}

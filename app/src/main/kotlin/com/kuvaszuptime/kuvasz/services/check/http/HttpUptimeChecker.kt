@@ -12,10 +12,8 @@ import io.micronaut.http.client.HttpClientConfiguration
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.exceptions.HttpException
-import io.micronaut.http.client.netty.NettyClientCustomizer
 import io.micronaut.retry.annotation.Retryable
 import io.micronaut.runtime.ApplicationConfiguration
-import io.netty.handler.ssl.SslContext
 import jakarta.inject.Singleton
 import kotlinx.coroutines.reactive.awaitSingle
 import org.slf4j.LoggerFactory
@@ -107,8 +105,7 @@ class HttpUptimeChecker(
 @Singleton
 class HttpCheckerClientConfiguration(
     config: ApplicationConfiguration,
-    private val sslContext: javax.net.ssl.SSLContext,
-    private val nettySslContext: SslContext
+    private val sslContext: javax.net.ssl.SSLContext
 ) : HttpClientConfiguration(config) {
 
     init {
